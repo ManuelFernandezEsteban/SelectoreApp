@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path:'paises',
+    path:'selector',
     loadChildren:()=>import('./paises/paises.module').then(m=>m.PaisesModule)
   }
 ];
