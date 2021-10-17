@@ -21,7 +21,9 @@ export class SelectorComponent implements OnInit {
 
   regiones:string[]=[];
   paises:PaisesSmall[]=[];
-  fronteras:PaisLarge[]=[];
+  //fronteras:string[]=[];
+  fronteras:PaisesSmall[]=[];
+  cargando:boolean=false;
 
 
   constructor(private fb:FormBuilder,
@@ -33,16 +35,29 @@ export class SelectorComponent implements OnInit {
     this.miFormulario.get('region')?.valueChanges.
       pipe(
         tap(region=>{
-          this.miFormulario.get('pais')?.reset('')
+          this.miFormulario.get('pais')?.reset('');
+          this.cargando=true;
         }),
         switchMap( region=>this.ps.getPaisesPorRegion(region))
       )
       .subscribe(paises=>{        
         this.paises=paises;
+        this.cargando=false;
       });
       this.miFormulario.get('pais')?.valueChanges.
-        subscribe(pais=>{
-          console.log(pais);
+      pipe(
+        tap( ()=> {
+          this.fronteras=[];
+          this.miFormulario.get('frontera')?.reset('');
+          this.cargando=true;
+        }),
+        switchMap( codigo => this.ps.getPaisByCode(codigo)),
+        switchMap(pais=>this.ps.getPaisesPorCodigo(pais?.borders!))
+      ).
+        subscribe(paises=>{
+          this.cargando=false;
+          console.log(paises);          
+          this.fronteras=paises;
         })
   }
 
